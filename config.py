@@ -10,7 +10,9 @@ API_KEY = 'your_api_key_here'            # Must match server config
 
 # LED Configuration
 LED_PIN = 2
-LED_COUNT = 21
+STRIP_COUNT = 6
+LEDS_PER_STRIP = 14
+LED_COUNT = STRIP_COUNT * LEDS_PER_STRIP  # 84 total
 
 # Status Colors (RGB tuples)
 COLOR_ERROR_NETWORK = (50, 0, 0)      # Red - WiFi/network issues
