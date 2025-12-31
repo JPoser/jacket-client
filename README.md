@@ -18,13 +18,21 @@ MicroPython client for ESP32 that controls NeoPixel LED strips on a jacket. Poll
 
 ## Quick Start
 
-### 1. Install dependencies
+### 1. Install uv
+
+[uv](https://docs.astral.sh/uv/) manages Python dependencies automatically.
 
 ```bash
-pip install esptool adafruit-ampy
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### 2. Configure
+
+Copy the example config and fill in your values:
+
+```bash
+cp config.example.py config.py
+```
 
 Edit `config.py` with your settings:
 
@@ -34,6 +42,8 @@ WIFI_PASSWORD = 'your_password'
 SERVER_URL = 'http://192.168.1.100:5000'
 API_KEY = 'your_api_key'
 ```
+
+`config.py` is gitignored to keep your secrets safe.
 
 ### 3. Flash and upload
 
@@ -58,6 +68,8 @@ Download MicroPython firmware from https://micropython.org/download/esp32/
 | `./flash.sh flash <firmware>` | Full flash: erase, install firmware, upload |
 | `./flash.sh monitor` | Open serial monitor (Ctrl+A, K to exit) |
 | `./flash.sh -p /dev/ttyUSB0 upload` | Specify serial port manually |
+
+Dependencies (esptool, ampy) are installed automatically by uv on first run.
 
 ## Simulator
 
