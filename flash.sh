@@ -10,6 +10,8 @@
 #   -p, --port <port>  Specify serial port (default: auto-detect)
 #   -b, --baud <baud>  Specify baud rate (default: 115200 for ampy, 460800 for esptool)
 #
+# Dependencies managed by uv (installed automatically on first run)
+#
 
 set -e
 
@@ -18,15 +20,22 @@ PORT=""
 BAUD_AMPY=115200
 BAUD_ESPTOOL=460800
 
-# Colors for output
+# Colours for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m' # No Colour
 
 info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
+
+# Check for uv
+check_uv() {
+    if ! command -v uv &> /dev/null; then
+        error "uv is required but not installed.\nInstall from: https://docs.astral.sh/uv/getting-started/installation/"
+    fi
+}
 
 # Auto-detect serial port
 detect_port() {
@@ -44,26 +53,19 @@ detect_port() {
     info "Detected port: $PORT"
 }
 
-# Check dependencies
-check_deps() {
-    local missing=()
+# Run esptool via uv
+esptool() {
+    uv run --with esptool esptool.py "$@"
+}
 
-    if ! command -v esptool.py &> /dev/null; then
-        missing+=("esptool (pip install esptool)")
-    fi
-
-    if ! command -v ampy &> /dev/null; then
-        missing+=("ampy (pip install adafruit-ampy)")
-    fi
-
-    if [[ ${#missing[@]} -gt 0 ]]; then
-        error "Missing dependencies:\n  ${missing[*]}"
-    fi
+# Run ampy via uv
+ampy() {
+    uv run --with adafruit-ampy ampy "$@"
 }
 
 # Upload scripts to ESP32
 cmd_upload() {
-    check_deps
+    check_uv
     [[ -z "$PORT" ]] && detect_port
 
     info "Uploading config.py..."
@@ -87,14 +89,14 @@ cmd_flash() {
         error "Firmware file not found: $firmware"
     fi
 
-    check_deps
+    check_uv
     [[ -z "$PORT" ]] && detect_port
 
     info "Erasing flash..."
-    esptool.py --chip esp32 --port "$PORT" erase_flash
+    esptool --chip esp32 --port "$PORT" erase_flash
 
     info "Flashing MicroPython firmware..."
-    esptool.py --chip esp32 --port "$PORT" --baud "$BAUD_ESPTOOL" \
+    esptool --chip esp32 --port "$PORT" --baud "$BAUD_ESPTOOL" \
         write_flash -z 0x1000 "$firmware"
 
     info "Waiting for ESP32 to restart..."
@@ -153,6 +155,8 @@ while [[ $# -gt 0 ]]; do
             echo "  $0 upload"
             echo "  $0 -p /dev/ttyUSB0 upload"
             echo "  $0 flash esp32-20231005-v1.21.0.bin"
+            echo ""
+            echo "Dependencies (esptool, ampy) are managed automatically by uv."
             exit 0
             ;;
     esac
