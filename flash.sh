@@ -53,9 +53,9 @@ detect_port() {
     info "Detected port: $PORT"
 }
 
-# Run esptool via uv
-esptool() {
-    uv run --with esptool esptool.py "$@"
+# Run esptool via uv (using new 'esptool' command, not deprecated 'esptool.py')
+run_esptool() {
+    uv run --with esptool esptool "$@"
 }
 
 # Run ampy via uv
@@ -93,11 +93,11 @@ cmd_flash() {
     [[ -z "$PORT" ]] && detect_port
 
     info "Erasing flash..."
-    esptool --chip esp32 --port "$PORT" erase_flash
+    run_esptool --chip esp32 --port "$PORT" erase-flash
 
     info "Flashing MicroPython firmware..."
-    esptool --chip esp32 --port "$PORT" --baud "$BAUD_ESPTOOL" \
-        write_flash -z 0x1000 "$firmware"
+    run_esptool --chip esp32 --port "$PORT" --baud "$BAUD_ESPTOOL" \
+        write-flash -z 0x1000 "$firmware"
 
     info "Waiting for ESP32 to restart..."
     sleep 3

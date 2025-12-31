@@ -1,4 +1,9 @@
 # Configuration for Jacket Client
+#
+# Copy this file to config.py and fill in your values:
+#   cp config.example.py config.py
+#
+# config.py is gitignored to keep your secrets safe.
 
 # WiFi Credentials
 WIFI_SSID = 'your_wifi_ssid'

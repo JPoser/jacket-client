@@ -28,6 +28,12 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ### 2. Configure
 
+Copy the example config and fill in your values:
+
+```bash
+cp config.example.py config.py
+```
+
 Edit `config.py` with your settings:
 
 ```python
@@ -36,6 +42,8 @@ WIFI_PASSWORD = 'your_password'
 SERVER_URL = 'http://192.168.1.100:5000'
 API_KEY = 'your_api_key'
 ```
+
+`config.py` is gitignored to keep your secrets safe.
 
 ### 3. Flash and upload
 
